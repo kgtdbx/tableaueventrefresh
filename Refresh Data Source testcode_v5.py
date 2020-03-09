@@ -29,8 +29,8 @@ Source_Path_Event='C://Users/admin/Desktop/files'
 Destination_Path='C://Users/admin/Desktop/filesa'
 
 serv='http://laptop-r8gnfcla'
-uname='man37cha'
-pwd='Sumitra@#$1'
+uname='Your Tableau Username'
+pwd='Your Tableau Password '
 site=''  # If site is Default then leave it blank else pass the site name AS ('https://mytableau.com/MYSITE')
 
 print("-------------------------------------------------------------------------")
