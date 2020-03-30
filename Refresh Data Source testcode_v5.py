@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb 25 10:39:21 2020
+Created on Mon Mar 30 20:00:25 2020
 
-@author: Manish Chauhan +91-9774083186
+@author:|| Manish Chauhan +91-9100814447
 
 """
 
@@ -28,9 +28,9 @@ Source_Path_Event='C://Users/admin/Desktop/files'
 # Path of Data events - archival i.e. Archive post trigger of Tableau extract
 Destination_Path='C://Users/admin/Desktop/filesa'
 
-serv='http://laptop-r8gnfcla'
-uname='Your Tableau Username'
-pwd='Your Tableau Password '
+serv='Your tableau server'
+uname='Your username'
+pwd='Your Password'
 site=''  # If site is Default then leave it blank else pass the site name AS ('https://mytableau.com/MYSITE')
 
 print("-------------------------------------------------------------------------")
@@ -63,16 +63,7 @@ df_dataeventtoextractmapping=pd.read_csv(Path_Dataevent_to_Tableau_Mapping)
 #Identify the unique extracts to be refreshed
 df_extracts=pd.merge(df_uniquedataevents,df_dataeventtoextractmapping,how='inner',left_on=['EventName'],right_on=['File_name'])
 
-#listuniqueextracts=dfextracts['Extract_Name']+'Project'].unique()
-df_temp=(df_extracts.iloc[:,[2]])
-print(df_temp)
-
-
-# Creating a list of datasources which needs to be refreshed 
-f_list=[]
-for index,row in (df_temp).iterrows():
-      f_list.append(df_temp.iloc[index][0])
-print(f_list)   
+   
       
 '''------------------------------------------------------------------------------------------------------------'''
 #creating the Authentication Object:tableau_auth
@@ -103,12 +94,26 @@ with server.auth.sign_in(tableau_auth):
 ##   print(datasource_name)
 # Creating dataframe with all the data source name and id's
    df_tableau_datasource=pd.DataFrame(datasource_id,index=datasource_name,columns=['ds_Id'])
-# Fetching Id's of datasources listed in F_list[]  
+##   print(df_tableau_datasource)
+#  To get only those datasources which are currently available in tableau we are joing the dataframe created from events with dataframe created from all datasources vailbale in tableau
+   df_extracts.set_index(['Extracts_name'],inplace=True)
+   df_extracts=pd.merge(df_extracts,df_tableau_datasource,how='inner',left_index= True , right_index = True) 
+##   print(df_extracts)
+
+   df_temp=(df_extracts.loc[:,'ds_Id'])
+   #print(type(df_temp))    
+  
+    
+ # Creating a list of Ids of datasources which needs to be refreshed 
+   f_list=df_temp.tolist()
+   ##print(f_list)
+    
+    
+# Passing Id's of datasources listed in F_list[]  
    for i in range(len(f_list)):
-       print(f_list[i])
-       idw=df_tableau_datasource.loc[f_list[i],['ds_Id']]
-       print(idw)
-       id_pass=idw[0]     
+       ##print(f_list[i])
+       id_pass=f_list[i]  
+       
 # Get the data source item to update
        datasource = server.datasources.get_by_id(id_pass)
    
@@ -117,11 +122,13 @@ with server.auth.sign_in(tableau_auth):
        print("-------------------------------------------------------------------------")
        print("Refresh Started Sucessfully for "+f_list[i])
        print("-------------------------------------------------------------------------")
-       
+print("-------------------------------------------------------------------------")
+print("Refresh for "+str(len(f_list))+' datasources have been sucessfully intiated')       
+print("-------------------------------------------------------------------------")
 # Move Data event files to Archive Folder
  
 for fileitem in list_data_events:
-    print(fileitem)
+    ##print(fileitem)
     shutil.move(Source_Path_Event+'/'+fileitem, Destination_Path+'/'+fileitem)
 print("-------------------------------------------------------------------------")
 print("Data Events Files Moved from Landing to Archive")
