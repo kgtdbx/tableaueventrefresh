@@ -94,9 +94,13 @@ with server.auth.sign_in(tableau_auth):
 ##   print(datasource_name)
 # Creating dataframe with all the data source name and id's
    df_tableau_datasource=pd.DataFrame(datasource_id,index=datasource_name,columns=['ds_Id'])
+ # Handling the Case sensivity of names of dats sources if there is any
+   df_tableau_datasource.index=df_tableau_datasource.index.str.upper()
 ##   print(df_tableau_datasource)
 #  To get only those datasources which are currently available in tableau we are joing the dataframe created from events with dataframe created from all datasources vailbale in tableau
    df_extracts.set_index(['Extracts_name'],inplace=True)
+# Handling the Case sensivity of names of dats sources if there is any
+   df_extracts.index=df_extracts.index.str.upper()
    df_extracts=pd.merge(df_extracts,df_tableau_datasource,how='inner',left_index= True , right_index = True) 
 ##   print(df_extracts)
 
